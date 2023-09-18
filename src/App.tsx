@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import {Header} from "./components/Header";
 import {YandexMap} from "./components/YandexMap";
+import SideBar from "./components/SideBar";
 
-function App() {
+const App: React.FC = () => {
   return (
     <div className="App">
-      <Header />
+      <SideBar />
         <YandexMap />
     </div>
   );

@@ -1,0 +1,8 @@
+.info-text {
+    display: flex;
+    padding-bottom: 2em;
+    font-size: 12px;
+    font-style: italic;
+    position: absolute;
+    bottom: 0;
+}

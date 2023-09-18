@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { YMaps, Map, Placemark, ZoomControl, TypeSelector, RouteButton, ObjectManager } from '@pbe/react-yandex-maps';
 
 import './Map.css';
-import data from '../data/bk.json'
+import data from '../data/rezh.json'
 
 import {Coords, CurrentCoords, PointFeature} from '../types/FinPoint'
 
-export function YandexMap() {
+export const YandexMap: React.FC = () => {
     const [mapState, setMapState] = useState<CurrentCoords>({
         center: [57.371976468912315, 61.395945886505494],
         zoom: 10,

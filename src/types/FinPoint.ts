@@ -11,11 +11,14 @@ export interface PointFeature {
         balloonContentFooter: string;
         clusterCaption: string;
         hintContent: string;
+        typeObject: string;
+        iconContent: string;
     };
     options: {
         preset: string;
     };
 }
+
 
 export interface FeatureCollection {
     type: "FeatureCollection";
@@ -30,4 +33,8 @@ export interface Coords {
 export interface CurrentCoords {
     center: number[];
     zoom: number;
+}
+
+export interface CheckboxListProps {
+    elements: string[];
 }

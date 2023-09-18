@@ -1,0 +1,10 @@
+.list-checkbox {
+    max-height: 500px;
+    width: 100%;
+    overflow: auto;
+}
+
+.checkbox-list-sidebar:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05)
+}
