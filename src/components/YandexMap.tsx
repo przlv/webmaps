@@ -2,17 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { YMaps, Map, Placemark, ZoomControl, TypeSelector, RouteButton, ObjectManager } from '@pbe/react-yandex-maps';
 
 import './Map.css';
-import data from '../data/rezh.json'
+import data from '../data/full_80.json'
 
-import {Coords, CurrentCoords, PointFeature} from '../types/FinPoint'
+import {Coords, CurrentCoords, FeatureCollection, PointFeature} from '../types/FinPoint'
+
 
 export const YandexMap: React.FC = () => {
     const [mapState, setMapState] = useState<CurrentCoords>({
         center: [57.371976468912315, 61.395945886505494],
         zoom: 10,
     })
+    const [types, setTypes] = useState<string[]>(() => {
+        const storedState: string | null = sessionStorage.getItem('ФильтрыText');
+        return storedState ? JSON.parse(storedState) : [];
+    });
 
-    const objects: PointFeature[] = data.features as PointFeature[];
+    const objects: FeatureCollection = data as FeatureCollection;
 
     useEffect(() => {
         if ('geolocation' in navigator) {
@@ -36,17 +41,17 @@ export const YandexMap: React.FC = () => {
                     <ObjectManager
                         options={{
                             clusterize: true,
-                            gridSize: 32,
+                            gridSize: 64,
                         }}
                         objects={{
                             openBalloonOnClick: true,
                             preset: "islands#greenDotIcon",
                         }}
                         clusters={{
-                            preset: "islands#redClusterIcons",
+                            preset: "islands#violetCircleDotIcon",
                         }}
-                        filter={(object: PointFeature) => object.id % 2 === 0}
-                        defaultFeatures={objects}
+                        filter={(object: PointFeature) => types.includes(object.properties.typeObject)}
+                        defaultFeatures={objects.features}
                         modules={[
                             "objectManager.addon.objectsBalloon",
                             "objectManager.addon.objectsHint",

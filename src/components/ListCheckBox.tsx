@@ -9,27 +9,37 @@ import IconButton from '@mui/material/IconButton';
 import {CheckboxListProps} from "../types/FinPoint"
 import './ListCheckBox.css'
 
-export function CheckboxList ({ elements }: CheckboxListProps) {
+export function CheckboxList ({ nameStorage, elements }: CheckboxListProps) {
     const [checked, setChecked] = useState<number[]>(() => {
-        const storedState: string | null = localStorage.getItem('checkboxState');
+        const storedState: string | null = sessionStorage.getItem(nameStorage);
+        return storedState ? JSON.parse(storedState) : [];
+    });
+
+    const [checkedText, setCheckedText] = useState<string[]>(() => {
+        const storedState: string | null = sessionStorage.getItem(nameStorage+'Text');
         return storedState ? JSON.parse(storedState) : [];
     });
 
     useEffect(() => {
-        localStorage.setItem('checkboxState', JSON.stringify(checked));
-    }, [checked]);
+        sessionStorage.setItem(nameStorage, JSON.stringify(checked));
+        sessionStorage.setItem(nameStorage+'Text', JSON.stringify(checkedText));
+    }, [checked, checkedText, nameStorage]);
 
-    const handleToggle = (value: number) => () => {
+    const handleToggle = (value: number, text: string) => () => {
         const currentIndex = checked.indexOf(value);
         const newChecked = [...checked];
+        const newCheckedText = [...checkedText];
 
         if (currentIndex === -1) {
             newChecked.push(value);
+            newCheckedText.push(text);
         } else {
             newChecked.splice(currentIndex, 1);
+            newCheckedText.splice(currentIndex, 1);
         }
 
         setChecked(newChecked);
+        setCheckedText(newCheckedText);
     };
 
     return (
@@ -38,7 +48,7 @@ export function CheckboxList ({ elements }: CheckboxListProps) {
                 const labelId = `checkbox-list-label-${index}`;
 
                 return (
-                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={handleToggle(index)}>
+                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={handleToggle(index, value)}>
                         <ListItemIcon>
                             <Checkbox
                                 edge="start"

@@ -5,6 +5,10 @@ export interface PointFeature {
         type: "Point";
         coordinates: [number, number];
     };
+    options: {
+        preset: string;
+        hideIconOnBalloonOpen: boolean;
+    };
     properties: {
         balloonContentHeader: string;
         balloonContentBody: string;
@@ -14,10 +18,8 @@ export interface PointFeature {
         typeObject: string;
         iconContent: string;
     };
-    options: {
-        preset: string;
-    };
 }
+
 
 
 export interface FeatureCollection {
@@ -36,5 +38,6 @@ export interface CurrentCoords {
 }
 
 export interface CheckboxListProps {
+    nameStorage: string;
     elements: string[];
 }

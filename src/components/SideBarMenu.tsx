@@ -13,6 +13,28 @@ import Divider from "@mui/material/Divider";
 import React, {useState} from "react";
 import {CheckboxList} from "./ListCheckBox";
 import './SideBarMenu.css'
+import data from '../data/full_80.json'
+import {FeatureCollection} from "../types/FinPoint";
+
+
+const getDataSidebar = () => {
+    const typePoints: string[] = [];
+    const ubr: string[] = [];
+
+    const dataJSON = data as FeatureCollection
+    for (let obj of dataJSON.features) {
+        if (!typePoints.includes(obj.properties.typeObject)) {
+            typePoints.push(obj.properties.typeObject)
+        }
+        let currentUbr: string = obj.properties.balloonContentFooter.split(',')[1].trim();
+        if (!ubr.includes(currentUbr)) {
+            ubr.push(currentUbr)
+        }
+    }
+
+    return [typePoints, ubr]
+}
+const [typePoints, ubr] = getDataSidebar();
 
 export const SideBarMenu: React.FC = () => {
     const [target, setTarget] = useState<number | null>(null);
@@ -35,16 +57,6 @@ export const SideBarMenu: React.FC = () => {
     };
 
     const menuItems = ['Фильтры', 'Территориальные учреждения Банка России'];
-    const typePoints = ['Офис банка (в т.ч. передвижной пункт)',
-                        'Удаленная точка банк. обслуживания',
-                        'Банкомат (с использованием банк. карт)',
-                        'Банкомат (без использования банк. карт)',
-                        'Банковские услуги в отделениях Почты России',
-                        'Точка выдачи наличных в магазине',
-                        'Точка оплаты наличными',
-                        'Микрофинансовая организация',
-                        'Страховая организация'];
-    const ubr = ['Свердловская область', 'Республика Башкортостан', 'Ставропольский край', 'Хабаровский край', 'Амурская область','Архангельская область','Астраханская область','Белгородская область','Брянская область','Владимирская область','Волгоградская область','Вологодская область','Воронежская область','Ивановская область', 'Свердловская область', 'Республика Башкортостан', 'Ставропольский край', 'Хабаровский край', 'Амурская область','Архангельская область','Астраханская область','Белгородская область','Брянская область','Владимирская область','Волгоградская область','Вологодская область','Воронежская область','Ивановская область', 'Свердловская область', 'Республика Башкортостан', 'Ставропольский край', 'Хабаровский край', 'Амурская область','Архангельская область','Астраханская область','Белгородская область','Брянская область','Владимирская область','Волгоградская область','Вологодская область','Воронежская область','Ивановская область', 'Свердловская область', 'Республика Башкортостан', 'Ставропольский край', 'Хабаровский край', 'Амурская область','Архангельская область','Астраханская область','Белгородская область','Брянская область','Владимирская область','Волгоградская область','Вологодская область','Воронежская область','Ивановская область'];
 
     return (
         <Box role="presentation" className='sidebar-menu'>
@@ -67,7 +79,7 @@ export const SideBarMenu: React.FC = () => {
                         <Collapse in={open === index} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding onMouseOver={() => handleMouseOver(index)} onMouseOut={handleMouseOut}>
                                 <ListItem disablePadding>
-                                    <CheckboxList elements={index === 0 ? typePoints:ubr}/>
+                                    <CheckboxList nameStorage={text} elements={index === 0 ? typePoints:ubr}/>
                                 </ListItem>
                             </List>
                         </Collapse>
