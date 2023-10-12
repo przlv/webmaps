@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -8,51 +8,43 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import {CheckboxListProps} from "../types/FinPoint"
 import './ListCheckBox.css'
+import { useAppSelector, useAppDispatch } from '../app/hooks'
+import {addPoint, removePoint} from "../app/typePointsReducer";
+import {addRegion, removeRegion} from "../app/regionReducer";
+
 
 export function CheckboxList ({ nameStorage, elements }: CheckboxListProps) {
-    const [checked, setChecked] = useState<number[]>(() => {
-        const storedState: string | null = sessionStorage.getItem(nameStorage);
-        return storedState ? JSON.parse(storedState) : [];
-    });
+    const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items)
+    const selectedRegions = useAppSelector((state) => state.selectedRegions.items)
+    const dispatch = useAppDispatch()
 
-    const [checkedText, setCheckedText] = useState<string[]>(() => {
-        const storedState: string | null = sessionStorage.getItem(nameStorage+'Text');
-        return storedState ? JSON.parse(storedState) : [];
-    });
-
-    useEffect(() => {
-        sessionStorage.setItem(nameStorage, JSON.stringify(checked));
-        sessionStorage.setItem(nameStorage+'Text', JSON.stringify(checkedText));
-    }, [checked, checkedText, nameStorage]);
-
-    const handleToggle = (value: number, text: string) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-        const newCheckedText = [...checkedText];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-            newCheckedText.push(text);
+    const handleToggleTypePoints = (text: string) => () => {
+        if (!selectedTypePoints.includes(text)) {
+            dispatch(addPoint(text))
         } else {
-            newChecked.splice(currentIndex, 1);
-            newCheckedText.splice(currentIndex, 1);
+            dispatch(removePoint(text))
         }
+    };
 
-        setChecked(newChecked);
-        setCheckedText(newCheckedText);
+    const handleToggleRegions = (text: string) => () => {
+        if (!selectedRegions.includes(text)) {
+            dispatch(addRegion(text))
+        } else {
+            dispatch(removeRegion(text))
+        }
     };
 
     return (
         <List className='list-checkbox'>
             {elements.map((value, index) => {
                 const labelId = `checkbox-list-label-${index}`;
-
+                const filterCurrent: boolean = nameStorage === 'Типы банковских объектов';
                 return (
-                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={handleToggle(index, value)}>
+                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={filterCurrent ? handleToggleTypePoints(value):handleToggleRegions(value)}>
                         <ListItemIcon>
                             <Checkbox
                                 edge="start"
-                                checked={checked.indexOf(index) !== -1}
+                                checked={filterCurrent ? selectedTypePoints.includes(value): selectedRegions.includes(value)}
                                 tabIndex={-1}
                                 disableRipple
                                 inputProps={{ 'aria-labelledby': labelId }}

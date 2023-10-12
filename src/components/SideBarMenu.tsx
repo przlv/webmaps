@@ -3,7 +3,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import FilterListIcon from "@mui/icons-material/FilterList";
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import ListItemText from "@mui/material/ListItemText";
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -12,9 +12,9 @@ import {Collapse} from "@mui/material";
 import Divider from "@mui/material/Divider";
 import React, {useState} from "react";
 import {CheckboxList} from "./ListCheckBox";
-import './SideBarMenu.css'
 import data from '../data/full_80.json'
 import {FeatureCollection} from "../types/FinPoint";
+import './SideBarMenu.css'
 
 
 const getDataSidebar = () => {
@@ -55,12 +55,12 @@ export const SideBarMenu: React.FC = () => {
             setOpen(index);
         }
     };
-
-    const menuItems = ['Фильтры', 'Территориальные учреждения Банка России'];
+    //Если менять 1ый фильтр, то нужно поменять его также в ListCheckBox.tsx
+    const menuItems = ['Типы банковских объектов', 'Регионы'];
 
     return (
         <Box role="presentation" className='sidebar-menu'>
-            <List component="nav">
+            <List component="nav" className="sidebar-menu-tabs">
                 {menuItems.map((text, index) => (
                     <div key={text}>
                         <ListItem className={target === index ? 'item-menu target-item' : 'item-menu'} disablePadding
@@ -68,8 +68,8 @@ export const SideBarMenu: React.FC = () => {
                                   onMouseOut={handleMouseOut}>
                             <ListItemButton onClick={() => handleToggle(index)}>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <FilterListIcon className={target === index ? 'item-menu target-item' : 'item-menu'} /> :
-                                        <AccountBalanceIcon className={target === index ? 'item-menu target-item' : 'item-menu'} />}
+                                    {index % 2 === 0 ? <AccountBalanceIcon className={target === index ? 'item-menu target-item' : 'item-menu'} /> :
+                                        <TravelExploreIcon className={target === index ? 'item-menu target-item' : 'item-menu'} />}
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                                 {open === index ? <ExpandLess /> : <ExpandMore />}
@@ -87,11 +87,6 @@ export const SideBarMenu: React.FC = () => {
                 ))}
             </List>
             <Divider />
-            <span className='info-text'>
-                <br/>Информация, представленная на сайте,
-                <br/>основана на отчетности финансовых организаций
-                <br/>по состоянию на 01.07.2022
-            </span>
         </Box>
     )
 }

@@ -31,7 +31,7 @@ const SideBar: React.FC = () => {
                 onClose={toggleDrawer(false)}
             >
                 <div className="sidebar-menu">
-                    <img className="logo-sidebar" src='/logo_gray.png' alt="Банк России"/>
+                    <img className="logo-sidebar" src='/logo-menu.png' alt="Финансовая доступность"/>
                     <SideBarMenu />
                 </div>
             </Drawer>

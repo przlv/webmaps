@@ -5,17 +5,17 @@ import './Map.css';
 import data from '../data/full_80.json'
 
 import {Coords, CurrentCoords, FeatureCollection, PointFeature} from '../types/FinPoint'
+import { useAppSelector } from '../app/hooks'
 
 
 export const YandexMap: React.FC = () => {
     const [mapState, setMapState] = useState<CurrentCoords>({
         center: [57.371976468912315, 61.395945886505494],
         zoom: 10,
-    })
-    const [types, setTypes] = useState<string[]>(() => {
-        const storedState: string | null = sessionStorage.getItem('ФильтрыText');
-        return storedState ? JSON.parse(storedState) : [];
     });
+
+    const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items);
+    const selectedRegions = useAppSelector((state) => state.selectedRegions.items);
 
     const objects: FeatureCollection = data as FeatureCollection;
 
@@ -41,7 +41,7 @@ export const YandexMap: React.FC = () => {
                     <ObjectManager
                         options={{
                             clusterize: true,
-                            gridSize: 64,
+                            gridSize: 32,
                         }}
                         objects={{
                             openBalloonOnClick: true,
@@ -50,7 +50,13 @@ export const YandexMap: React.FC = () => {
                         clusters={{
                             preset: "islands#violetCircleDotIcon",
                         }}
-                        filter={(object: PointFeature) => types.includes(object.properties.typeObject)}
+                        filter={(object: PointFeature) => {
+                            const balloonContentFooter = object.properties.balloonContentFooter;
+                            return (
+                                selectedRegions.some(substring => balloonContentFooter.includes(substring)) &&
+                                    selectedTypePoints.includes(object.properties.typeObject)
+                            )
+                        }}
                         defaultFeatures={objects.features}
                         modules={[
                             "objectManager.addon.objectsBalloon",
