@@ -13,6 +13,7 @@ import Divider from "@mui/material/Divider";
 import React, {useState} from "react";
 import {CheckboxList} from "./ListCheckBox";
 import data from '../data/full_80.json'
+import regionsData from "../data/regions.json"
 import {FeatureCollection} from "../types/FinPoint";
 import './SideBarMenu.css'
 
