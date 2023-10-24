@@ -12,30 +12,20 @@ import {Collapse} from "@mui/material";
 import Divider from "@mui/material/Divider";
 import React, {useState} from "react";
 import {CheckboxList} from "./ListCheckBox";
-import data from '../data/full_80.json'
-import regionsData from "../data/regions.json"
-import {FeatureCollection} from "../types/FinPoint";
+import {ListCheckBoxRegions} from "./ListCheckBoxRegions";
+import infoData from "../data/infoData.json"
 import './SideBarMenu.css'
 
-
-const getDataSidebar = () => {
-    const typePoints: string[] = [];
-    const ubr: string[] = [];
-
-    const dataJSON = data as FeatureCollection
-    for (let obj of dataJSON.features) {
-        if (!typePoints.includes(obj.properties.typeObject)) {
-            typePoints.push(obj.properties.typeObject)
-        }
-        let currentUbr: string = obj.properties.balloonContentFooter.split(',')[1].trim();
-        if (!ubr.includes(currentUbr)) {
-            ubr.push(currentUbr)
-        }
+const getListRegions = () => {
+    let listRegions: string[] = [];
+    for (let region of Object.keys(infoData.regions)) {
+        listRegions.push(region);
     }
-
-    return [typePoints, ubr]
+    return listRegions.sort((a, b) => a.localeCompare(b, 'ru'));
 }
-const [typePoints, ubr] = getDataSidebar();
+
+const typePoints = infoData.typePoints.sort((a, b) => a.localeCompare(b, 'ru'));
+const listRegions: string[] = getListRegions();
 
 export const SideBarMenu: React.FC = () => {
     const [target, setTarget] = useState<number | null>(null);
@@ -56,37 +46,56 @@ export const SideBarMenu: React.FC = () => {
             setOpen(index);
         }
     };
+
     //Если менять 1ый фильтр, то нужно поменять его также в ListCheckBox.tsx
-    const menuItems = ['Типы банковских объектов', 'Регионы'];
+    // const menuItems = ['Типы банковских объектов', 'Регионы'];
 
     return (
         <Box role="presentation" className='sidebar-menu'>
-            <List component="nav" className="sidebar-menu-tabs">
-                {menuItems.map((text, index) => (
-                    <div key={text}>
-                        <ListItem className={target === index ? 'item-menu target-item' : 'item-menu'} disablePadding
-                                  onMouseOver={() => handleMouseOver(index)}
+                <List component="nav" className="sidebar-menu-tabs">
+                    <div key={'Типы банковских объектов'} onMouseLeave={() => handleToggle(-1)}>
+                        <ListItem className={target === 0 ? 'item-menu target-item' : 'item-menu'} disablePadding
+                                  onMouseOver={() => handleMouseOver(0)}
                                   onMouseOut={handleMouseOut}>
-                            <ListItemButton onClick={() => handleToggle(index)}>
+                            <ListItemButton onClick={() => handleToggle(0)}>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <AccountBalanceIcon className={target === index ? 'item-menu target-item' : 'item-menu'} /> :
-                                        <TravelExploreIcon className={target === index ? 'item-menu target-item' : 'item-menu'} />}
+                                    <AccountBalanceIcon className={target === 0 ? 'item-menu target-item' : 'item-menu'} />
                                 </ListItemIcon>
-                                <ListItemText primary={text} />
-                                {open === index ? <ExpandLess /> : <ExpandMore />}
+                                <ListItemText primary={'Типы банковских объектов'} />
+                                {open === 0 ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
                         </ListItem>
 
-                        <Collapse in={open === index} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding onMouseOver={() => handleMouseOver(index)} onMouseOut={handleMouseOut}>
+                        <Collapse in={open === 0} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding onMouseOver={() => handleMouseOver(0)} onMouseOut={handleMouseOut}>
                                 <ListItem disablePadding>
-                                    <CheckboxList nameStorage={text} elements={index === 0 ? typePoints:ubr}/>
+                                    <CheckboxList nameStorage={'Типы банковских объектов'} elements={typePoints}/>
                                 </ListItem>
                             </List>
                         </Collapse>
                     </div>
-                ))}
-            </List>
+                    <div key={'Регионы'} onMouseLeave={() => handleToggle(-1)}>
+                    <ListItem className={target === 1 ? 'item-menu target-item' : 'item-menu'} disablePadding
+                                  onMouseOver={() => handleMouseOver(1)}
+                                  onMouseOut={handleMouseOut}>
+                            <ListItemButton onClick={() => handleToggle(1)}>
+                                <ListItemIcon>
+                                    <TravelExploreIcon className={target === 1 ? 'item-menu target-item' : 'item-menu'} />
+                                </ListItemIcon>
+                                <ListItemText primary={'Регионы'} />
+                                {open === 1 ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                        </ListItem>
+
+                        <Collapse in={open === 1} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding onMouseOver={() => handleMouseOver(1)} onMouseOut={handleMouseOut}>
+                                <ListItem disablePadding>
+                                    <ListCheckBoxRegions nameStorage={'Регионы'} elements={listRegions}/>
+                                </ListItem>
+                            </List>
+                        </Collapse>
+                    </div>
+                </List>
             <Divider />
         </Box>
     )

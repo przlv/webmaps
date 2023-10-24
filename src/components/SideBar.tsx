@@ -19,7 +19,7 @@ const SideBar: React.FC = () => {
                 }
                 setState(open);
             };
-
+    
     return (
         <Fragment>
             <MenuIcon

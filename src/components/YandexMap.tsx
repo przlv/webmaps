@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { YMaps, Map, Placemark, ZoomControl, TypeSelector, RouteButton, ObjectManager } from '@pbe/react-yandex-maps';
 
 import './Map.css';
-import data from '../data/full_80.json'
+import data from '../data/dataRegions/full_80.json'
 
 import {Coords, CurrentCoords, FeatureCollection, PointFeature} from '../types/FinPoint'
 import { useAppSelector } from '../app/hooks'
