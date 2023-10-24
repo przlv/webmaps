@@ -20,8 +20,6 @@ export interface PointFeature {
     };
 }
 
-
-
 export interface FeatureCollection {
     type: "FeatureCollection";
     features: PointFeature[];
