@@ -6,6 +6,7 @@ import data from '../data/dataRegions/full_80.json'
 
 import {Coords, CurrentCoords, FeatureCollection, PointFeature} from '../types/FinPoint'
 import { useAppSelector } from '../app/hooks'
+import getPoints from "../data/getPoints";
 
 
 export const YandexMap: React.FC = () => {
@@ -18,6 +19,17 @@ export const YandexMap: React.FC = () => {
     const selectedRegions = useAppSelector((state) => state.selectedRegions.items);
 
     const objects: FeatureCollection = data as FeatureCollection;
+    const testdata = getPoints(80);
+
+    testdata.then(data => {
+        if (data !== null) {
+            // Обработайте данные здесь
+            console.log(data);
+        }
+    }).catch(error => {
+        console.error('Произошла ошибка:', error);
+    });
+
 
     useEffect(() => {
         if ('geolocation' in navigator) {
