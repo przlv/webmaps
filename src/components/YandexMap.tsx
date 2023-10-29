@@ -7,6 +7,17 @@ import data from '../data/dataRegions/full_80.json'
 import {Coords, CurrentCoords, FeatureCollection, PointFeature} from '../types/FinPoint'
 import { useAppSelector } from '../app/hooks'
 import getPoints from "../data/getPoints";
+import infoData from "../data/infoData.json"
+
+
+interface BankLocation {
+    [region: string]: string;
+}
+  
+interface BankInterface {
+    regions: BankLocation;
+    typePoints: string[];
+}
 
 
 export const YandexMap: React.FC = () => {
@@ -15,21 +26,50 @@ export const YandexMap: React.FC = () => {
         zoom: 10,
     });
 
+    const [objects, setObjects] = useState<FeatureCollection | null>(null);
+
     const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items);
     const selectedRegions = useAppSelector((state) => state.selectedRegions.items);
 
-    const objects: FeatureCollection = data as FeatureCollection;
-    const testdata = getPoints(80);
-
-    testdata.then(data => {
-        if (data !== null) {
-            // Обработайте данные здесь
-            console.log(data);
-        }
-    }).catch(error => {
-        console.error('Произошла ошибка:', error);
-    });
-
+    const objectsLoad: FeatureCollection = data as FeatureCollection;
+    useEffect(() => {
+        setObjects(objectsLoad);
+        console.log('loadData', objectsLoad);
+    }, [])
+    
+    const infoDatasets: BankInterface = infoData as BankInterface;
+    // useEffect(() => {
+    //     if (selectedRegions.length > 0) {
+    //         setObjects(null);
+    //         const combinedFeatures: PointFeature[] = [] as PointFeature[];
+    
+    //         // Создаем массив обещаний для всех асинхронных запросов
+    //         const promises = selectedRegions.map(region => {
+    //             const numData: number = Number(infoDatasets.regions[region]);
+    //             return getPoints(numData)
+    //                 .then(dataset => {
+    //                     if (dataset !== null) {
+    //                         combinedFeatures.push(...dataset.features);
+    //                     }
+    //                 })
+    //                 .catch(error => {
+    //                     console.error('Произошла ошибка:', error);
+    //                 });
+    //         });
+    
+    //         // Ожидаем завершения всех асинхронных запросов
+    //         Promise.all(promises).then(() => {
+    //             const newObjects: FeatureCollection = {
+    //                 type: "FeatureCollection",
+    //                 features: combinedFeatures,
+    //             };
+    //             setObjects(newObjects);
+    //             console.log('my', newObjects);
+    //         });
+    //     }
+    // }, [selectedRegions]);
+    
+    
 
     useEffect(() => {
         if ('geolocation' in navigator) {
@@ -62,14 +102,11 @@ export const YandexMap: React.FC = () => {
                         clusters={{
                             preset: "islands#violetCircleDotIcon",
                         }}
-                        filter={(object: PointFeature) => {
-                            const balloonContentFooter = object.properties.balloonContentFooter;
-                            return (
-                                selectedRegions.some(substring => balloonContentFooter.includes(substring)) &&
-                                    selectedTypePoints.includes(object.properties.typeObject)
-                            )
-                        }}
-                        defaultFeatures={objects.features}
+                        // filter={(object: PointFeature) => {
+                        //     // const balloonContentFooter = object.properties.balloonContentFooter;
+                        //     return selectedTypePoints.includes(object.properties.typeObject)
+                        // }}
+                        defaultFeatures={objects}
                         modules={[
                             "objectManager.addon.objectsBalloon",
                             "objectManager.addon.objectsHint",

@@ -9,21 +9,12 @@ import IconButton from '@mui/material/IconButton';
 import {CheckboxListProps} from "../types/FinPoint"
 import './ListCheckBox.css'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
-import {addPoint, removePoint} from "../app/typePointsReducer";
 import {addRegion, removeRegion} from "../app/regionReducer";
 
-export function ListCheckBoxRegions ({ nameStorage, elements }: CheckboxListProps) {
-    const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items)
+
+export function ListCheckBoxRegions({ nameStorage, elements }: CheckboxListProps) {
     const selectedRegions = useAppSelector((state) => state.selectedRegions.items)
     const dispatch = useAppDispatch()
-
-    const handleToggleTypePoints = (text: string) => () => {
-        if (!selectedTypePoints.includes(text)) {
-            dispatch(addPoint(text))
-        } else {
-            dispatch(removePoint(text))
-        }
-    };
 
     const handleToggleRegions = (text: string) => () => {
         if (!selectedRegions.includes(text)) {
@@ -37,13 +28,12 @@ export function ListCheckBoxRegions ({ nameStorage, elements }: CheckboxListProp
         <List className='list-checkbox'>
             {elements.map((value, index) => {
                 const labelId = `checkbox-list-label-${index}`;
-                const filterCurrent: boolean = nameStorage === 'Типы банковских объектов';
                 return (
-                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={filterCurrent ? handleToggleTypePoints(value):handleToggleRegions(value)}>
+                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={handleToggleRegions(value)}>
                         <ListItemIcon>
                             <Checkbox
                                 edge="start"
-                                checked={filterCurrent ? selectedTypePoints.includes(value): selectedRegions.includes(value)}
+                                checked={selectedRegions.includes(value)}
                                 tabIndex={-1}
                                 disableRipple
                                 inputProps={{ 'aria-labelledby': labelId }}
