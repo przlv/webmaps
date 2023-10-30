@@ -34,7 +34,6 @@ export const YandexMap: React.FC = () => {
     const objectsLoad: FeatureCollection = data as FeatureCollection;
     useEffect(() => {
         setObjects(objectsLoad);
-        console.log('loadData', objectsLoad);
     }, [])
     
     const infoDatasets: BankInterface = infoData as BankInterface;

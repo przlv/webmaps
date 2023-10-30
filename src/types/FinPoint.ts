@@ -41,5 +41,5 @@ export interface CheckboxListProps {
 }
 
 export interface Districts {
-    nameDistrict: string[];
+    [nameDistrict: string]: string[];
 }
