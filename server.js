@@ -36,9 +36,31 @@ app.get('/api/getDistricts', (req, res) => {
         const filePath = path.join(dataFolderPath, file);
         const fileData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         const fileId = file.split('_')[1].replace('.json', '');
-        districtData[fileId] = fileData
+        let region = 'Empty Region';
+        for ([key, item] of Object.entries(infoData.regions)) {
+          if (fileId === item) {
+            region = key;
+            break;
+          }
+        }
+        let regular_districts = [];
+        let district = 'empty district';
+        for (point of fileData.features) {
+          try {
+            district = point.properties.balloonContentFooter.split(',')[1].trim().toLowerCase();
+          }
+          catch {
+            continue;
+          }
+        
+          if (!(regular_districts.includes(district))) {
+            regular_districts.push(district);
+          }
+        }
+        districtData[region] = regular_districts;
       }
     });
+    
     res.json(districtData);
   });
 });

@@ -5,7 +5,7 @@ const axiosInstance = axios.create({
     baseURL: 'http://localhost:3001',
 });
 
-export default async function getPoints(): Promise<Districts> {
+export default async function getDistrics(): Promise<Districts> {
     return axiosInstance.get(`/api/getDistricts`)
         .then(response => {
             return response.data;

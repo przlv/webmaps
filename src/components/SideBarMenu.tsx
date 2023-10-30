@@ -90,7 +90,7 @@ export const SideBarMenu: React.FC = () => {
                         <Collapse in={open === 1} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding onMouseOver={() => handleMouseOver(1)} onMouseOut={handleMouseOut}>
                                 <ListItem disablePadding>
-                                    <ListCheckBoxRegions nameStorage={'Регионы'} elements={listRegions}/>
+                                    <ListCheckBoxRegions />
                                 </ListItem>
                             </List>
                         </Collapse>
