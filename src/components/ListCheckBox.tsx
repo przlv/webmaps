@@ -10,12 +10,10 @@ import {CheckboxListProps} from "../types/FinPoint"
 import './ListCheckBox.css'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import {addPoint, removePoint} from "../app/typePointsReducer";
-import {addRegion, removeRegion} from "../app/regionReducer";
 
 
-export function CheckboxList ({ nameStorage, elements }: CheckboxListProps) {
+export function CheckboxList ({elements}: CheckboxListProps) {
     const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items)
-    const selectedRegions = useAppSelector((state) => state.selectedRegions.items)
     const dispatch = useAppDispatch()
 
     const handleToggleTypePoints = (text: string) => () => {
@@ -26,25 +24,16 @@ export function CheckboxList ({ nameStorage, elements }: CheckboxListProps) {
         }
     };
 
-    const handleToggleRegions = (text: string) => () => {
-        if (!selectedRegions.includes(text)) {
-            dispatch(addRegion(text))
-        } else {
-            dispatch(removeRegion(text))
-        }
-    };
-
     return (
         <List className='list-checkbox'>
             {elements.map((value, index) => {
                 const labelId = `checkbox-list-label-${index}`;
-                const filterCurrent: boolean = nameStorage === 'Типы банковских объектов';
                 return (
-                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={filterCurrent ? handleToggleTypePoints(value):handleToggleRegions(value)}>
+                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={handleToggleTypePoints(value)}>
                         <ListItemIcon>
                             <Checkbox
                                 edge="start"
-                                checked={filterCurrent ? selectedTypePoints.includes(value): selectedRegions.includes(value)}
+                                checked={selectedTypePoints.includes(value)}
                                 tabIndex={-1}
                                 disableRipple
                                 inputProps={{ 'aria-labelledby': labelId }}

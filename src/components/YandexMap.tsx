@@ -2,10 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { YMaps, Map, Placemark, ZoomControl, TypeSelector, RouteButton, ObjectManager } from '@pbe/react-yandex-maps';
 
 import './Map.css';
-import data from '../data/dataRegions/full_80.json'
 
-import {Coords, CurrentCoords, FeatureCollection, PointFeature} from '../types/FinPoint'
+import {Coords, CurrentCoords, PointFeature} from '../types/FinPoint'
 import { useAppSelector } from '../app/hooks'
+import getPoints from "../data/getPoints";
+import infoData from "../data/infoData.json"
+
+
+interface BankLocation {
+    [region: string]: string;
+}
+  
+interface BankInterface {
+    regions: BankLocation;
+    typePoints: string[];
+}
 
 
 export const YandexMap: React.FC = () => {
@@ -14,10 +25,38 @@ export const YandexMap: React.FC = () => {
         zoom: 10,
     });
 
-    const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items);
-    const selectedRegions = useAppSelector((state) => state.selectedRegions.items);
+    const [objects, setObjects] = useState<PointFeature[]>([]);
 
-    const objects: FeatureCollection = data as FeatureCollection;
+    const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items);
+    const selectedRegion = useAppSelector((state) => state.selectedRegion.items);
+    const selectedDistricts = useAppSelector((state) => state.selectedDistricts.items);
+    const targetRegion = useAppSelector((state) => state.selectedDistricts.targetRegion);
+    const selectedGridSize = useAppSelector((state) => state.selectedGridSize.gridSize);
+
+    const infoDatasets: BankInterface = infoData as BankInterface;
+    useEffect(() => {
+        async function fetchData() {
+            if (selectedRegion !== '' || targetRegion !== '') {
+                setObjects([]);
+
+                try {
+                    let region: string;
+                    if (selectedRegion !== '') region = selectedRegion;
+                    else region = targetRegion;
+
+                    const numData = Number(infoDatasets.regions[region]);
+                    const dataset = await getPoints(numData);
+                    if (dataset !== null) {
+                        setObjects(dataset.features);
+                    }
+                } catch (error) {
+                    console.error('Произошла ошибка:', error);
+                }
+            }
+            else setObjects([]);
+        }
+        fetchData();
+    }, [selectedRegion, targetRegion]);
 
     useEffect(() => {
         if ('geolocation' in navigator) {
@@ -39,25 +78,40 @@ export const YandexMap: React.FC = () => {
                     <TypeSelector />
                     <RouteButton options={{ float: "right" }} />
                     <ObjectManager
+                        key={selectedRegion}
                         options={{
                             clusterize: true,
-                            gridSize: 32,
+                            gridSize: selectedGridSize,
                         }}
                         objects={{
                             openBalloonOnClick: true,
-                            preset: "islands#greenDotIcon",
+                            // preset: "islands#greenDotIcon",
                         }}
-                        clusters={{
-                            preset: "islands#violetCircleDotIcon",
-                        }}
+                        // clusters={{
+                        //     preset: "islands#violetCircleDotIcon",
+                        // }}
+                        features={objects}
+
                         filter={(object: PointFeature) => {
-                            const balloonContentFooter = object.properties.balloonContentFooter;
-                            return (
-                                selectedRegions.some(substring => balloonContentFooter.includes(substring)) &&
-                                    selectedTypePoints.includes(object.properties.typeObject)
-                            )
+                            let districtCheck: boolean = false;
+                            let typeCheck: boolean;
+
+                            if (selectedDistricts.length > 0) {
+                                const balloonContentFooter = object.properties.balloonContentFooter;
+                                for (let district of selectedDistricts) {
+                                    if (balloonContentFooter.toLowerCase().includes(district.trim().toLowerCase())) {
+                                        districtCheck = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            else districtCheck = true;
+
+
+                            typeCheck = selectedTypePoints.includes(object.properties.typeObject);
+
+                            return districtCheck && typeCheck;
                         }}
-                        defaultFeatures={objects.features}
                         modules={[
                             "objectManager.addon.objectsBalloon",
                             "objectManager.addon.objectsHint",

@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface RegionsState {
-    items: string[];
+    items: string;
 }
 
 const initialState: RegionsState = {
-    items: [],
+    items: '',
 };
 
 
@@ -14,10 +14,10 @@ const regionSlice = createSlice({
     initialState,
     reducers: {
         addRegion: (state, action: PayloadAction<string>) => {
-            state.items.push(action.payload);
+            state.items = action.payload;
         },
-        removeRegion: (state, action: PayloadAction<string>) => {
-            state.items = state.items.filter(item => item !== action.payload);
+        removeRegion: (state) => {
+            state.items = '';
         },
     },
 });

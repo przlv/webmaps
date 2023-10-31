@@ -1,60 +1,128 @@
-import React from 'react';
+import {useState, useEffect, useCallback} from 'react'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
+import {Collapse} from "@mui/material";
 import IconButton from '@mui/material/IconButton';
-import {CheckboxListProps} from "../types/FinPoint"
+import {Districts} from "../types/FinPoint"
 import './ListCheckBox.css'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
-import {addPoint, removePoint} from "../app/typePointsReducer";
 import {addRegion, removeRegion} from "../app/regionReducer";
+import getDistricts from '../data/getDistrict';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import {addDistrict, removeDistrict, clearDistricts, setupTargetRegion} from "../app/districtReducer";
 
-export function ListCheckBoxRegions ({ nameStorage, elements }: CheckboxListProps) {
-    const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items)
-    const selectedRegions = useAppSelector((state) => state.selectedRegions.items)
+
+interface AdditionalListsVisible {
+    [key: string]: boolean;
+}
+
+export function ListCheckBoxRegions() {
+    // const [targetRegion, setTargetRegion] = useState<string>('');
+    const [dataRegions, setDataRegions] = useState<Districts>();
+    const [elements, setElements] = useState<string[]>([]);
+    const [additionalListsVisible, setAdditionalListsVisible] = useState<AdditionalListsVisible>({});
+
+    useEffect(() => {
+        getDistricts().then((districtsData) => {
+            setDataRegions(districtsData);
+            let regions = Object.keys(districtsData);
+            setElements(regions.sort());
+        });
+    }, []);
+
+    const selectedDistricts = useAppSelector((state) => state.selectedDistricts.items)
+    const targetRegion = useAppSelector((state) => state.selectedDistricts.targetRegion)
+    const selectedRegion = useAppSelector((state) => state.selectedRegion.items)
     const dispatch = useAppDispatch()
 
-    const handleToggleTypePoints = (text: string) => () => {
-        if (!selectedTypePoints.includes(text)) {
-            dispatch(addPoint(text))
+    const handleToggleDistrict = useCallback((districtCurrent: string, region: string) => {
+        dispatch(removeRegion());
+        if (!selectedDistricts.includes(districtCurrent)) {
+            if  (targetRegion === '') {
+                dispatch(setupTargetRegion(region));
+            }
+            else {
+                if (region !== targetRegion) {
+                    dispatch(clearDistricts());
+                    dispatch(setupTargetRegion(region));
+                }
+            }
+            dispatch(addDistrict(districtCurrent));
         } else {
-            dispatch(removePoint(text))
+            dispatch(removeDistrict(districtCurrent))
         }
-    };
+    }, [dispatch, selectedDistricts]);
 
-    const handleToggleRegions = (text: string) => () => {
-        if (!selectedRegions.includes(text)) {
-            dispatch(addRegion(text))
+    const handleToggleRegions = useCallback((text: string) => {
+        if (!(selectedRegion === text)) {
+            dispatch(addRegion(text));
+            dispatch(setupTargetRegion(''));
+            dispatch(clearDistricts());
         } else {
-            dispatch(removeRegion(text))
+            dispatch(removeRegion());
+            dispatch(setupTargetRegion(''));
         }
-    };
+    }, [dispatch, selectedRegion]);
 
+    const toggleAdditionalList = useCallback((value: string) => {
+        setAdditionalListsVisible((prev) => ({
+            ...prev,
+            [value]: !prev[value],
+        }));
+    }, []);
+    
     return (
         <List className='list-checkbox'>
-            {elements.map((value, index) => {
+            {elements.map((region, index) => {
                 const labelId = `checkbox-list-label-${index}`;
-                const filterCurrent: boolean = nameStorage === 'Типы банковских объектов';
                 return (
-                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={filterCurrent ? handleToggleTypePoints(value):handleToggleRegions(value)}>
-                        <ListItemIcon>
-                            <Checkbox
-                                edge="start"
-                                checked={filterCurrent ? selectedTypePoints.includes(value): selectedRegions.includes(value)}
-                                tabIndex={-1}
-                                disableRipple
-                                inputProps={{ 'aria-labelledby': labelId }}
-                            />
-                        </ListItemIcon>
-                        <ListItemText id={labelId} primary={value} />
-                        <ListItemSecondaryAction>
-                            <IconButton edge="end" aria-label="comments">
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
+                    <div key={`${index}-mainList`}>
+                        <div className='regions-list-checkbox'>
+                            <ListItemIcon>
+                                <Checkbox
+                                    edge="start"
+                                    checked={selectedRegion === region}
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{ 'aria-labelledby': labelId }}
+                                    onClick={() => handleToggleRegions(region)}
+                                />
+                            </ListItemIcon>
+                            <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={() => toggleAdditionalList(region)}>
+                                <ListItemText id={labelId} primary={region} />
+                                {additionalListsVisible[region] ? <ExpandLess /> : <ExpandMore />}
+                            </ListItem>
+                        </div>
+                        <div className='districts-listcheckbox'>
+                            <Collapse in={additionalListsVisible[region]} timeout="auto" unmountOnExit>
+                                <List>
+                                    {dataRegions !== undefined ? dataRegions[region].sort().map((district, index) => {
+                                        const labelId = `checkbox-list-label-district-${index}`;
+                                        return (
+                                            <ListItem className="checkbox-list-sidebar" key={`${index}-additionallyList`} role={undefined} dense onClick={() => handleToggleDistrict(district, region)}>
+                                                <ListItemIcon>
+                                                    <Checkbox
+                                                        size='small'
+                                                        edge="start"
+                                                        checked={selectedDistricts.includes(district)}
+                                                        tabIndex={-1}
+                                                        disableRipple
+                                                        inputProps={{ 'aria-labelledby': labelId }}
+                                                    />
+                                                </ListItemIcon>
+                                                <ListItemText id={labelId} primary={district} />
+                                                <IconButton edge="end" aria-label="comments"/>
+                                            </ListItem>
+                                        )
+                                    }):[]}
+                                </List>
+                            </Collapse>
+                        </div>
+                    </div>
                 );
             })}
         </List>
