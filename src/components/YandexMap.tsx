@@ -31,6 +31,7 @@ export const YandexMap: React.FC = () => {
     const selectedRegion = useAppSelector((state) => state.selectedRegion.items);
     const selectedDistricts = useAppSelector((state) => state.selectedDistricts.items);
     const targetRegion = useAppSelector((state) => state.selectedDistricts.targetRegion);
+    const selectedGridSize = useAppSelector((state) => state.selectedGridSize.gridSize);
 
     const infoDatasets: BankInterface = infoData as BankInterface;
     useEffect(() => {
@@ -80,28 +81,32 @@ export const YandexMap: React.FC = () => {
                         key={selectedRegion}
                         options={{
                             clusterize: true,
-                            gridSize: 32,
+                            gridSize: selectedGridSize,
                         }}
                         objects={{
                             openBalloonOnClick: true,
-                            preset: "islands#greenDotIcon",
+                            // preset: "islands#greenDotIcon",
                         }}
-                        clusters={{
-                            preset: "islands#violetCircleDotIcon",
-                        }}
+                        // clusters={{
+                        //     preset: "islands#violetCircleDotIcon",
+                        // }}
                         features={objects}
 
                         filter={(object: PointFeature) => {
                             let districtCheck: boolean = false;
                             let typeCheck: boolean;
 
-                            const balloonContentFooter = object.properties.balloonContentFooter;
-                            for (let district of selectedDistricts) {
-                                if (balloonContentFooter.toLowerCase().includes(district.trim().toLowerCase())) {
-                                    districtCheck = true;
-                                    break;
+                            if (selectedDistricts.length > 0) {
+                                const balloonContentFooter = object.properties.balloonContentFooter;
+                                for (let district of selectedDistricts) {
+                                    if (balloonContentFooter.toLowerCase().includes(district.trim().toLowerCase())) {
+                                        districtCheck = true;
+                                        break;
+                                    }
                                 }
                             }
+                            else districtCheck = true;
+
 
                             typeCheck = selectedTypePoints.includes(object.properties.typeObject);
 

@@ -13,6 +13,7 @@ import Divider from "@mui/material/Divider";
 import React, {useState} from "react";
 import {CheckboxList} from "./ListCheckBox";
 import {ListCheckBoxRegions} from "./ListCheckBoxRegions";
+import CustomSlider from "./Slider";
 import infoData from "../data/infoData.json"
 import './SideBarMenu.css'
 
@@ -84,6 +85,7 @@ export const SideBarMenu: React.FC = () => {
                             </List>
                         </Collapse>
                     </div>
+                    <CustomSlider />
                 </List>
             <Divider />
         </Box>
