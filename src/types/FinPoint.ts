@@ -36,7 +36,6 @@ export interface CurrentCoords {
 }
 
 export interface CheckboxListProps {
-    nameStorage: string;
     elements: string[];
 }
 

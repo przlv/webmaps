@@ -16,16 +16,8 @@ import {ListCheckBoxRegions} from "./ListCheckBoxRegions";
 import infoData from "../data/infoData.json"
 import './SideBarMenu.css'
 
-const getListRegions = () => {
-    let listRegions: string[] = [];
-    for (let region of Object.keys(infoData.regions)) {
-        listRegions.push(region);
-    }
-    return listRegions.sort((a, b) => a.localeCompare(b, 'ru'));
-}
 
 const typePoints = infoData.typePoints.sort((a, b) => a.localeCompare(b, 'ru'));
-const listRegions: string[] = getListRegions();
 
 export const SideBarMenu: React.FC = () => {
     const [target, setTarget] = useState<number | null>(null);
@@ -47,9 +39,6 @@ export const SideBarMenu: React.FC = () => {
         }
     };
 
-    //Если менять 1ый фильтр, то нужно поменять его также в ListCheckBox.tsx
-    // const menuItems = ['Типы банковских объектов', 'Регионы'];
-
     return (
         <Box role="presentation" className='sidebar-menu'>
                 <List component="nav" className="sidebar-menu-tabs">
@@ -69,7 +58,7 @@ export const SideBarMenu: React.FC = () => {
                         <Collapse in={open === 0} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding onMouseOver={() => handleMouseOver(0)} onMouseOut={handleMouseOut}>
                                 <ListItem disablePadding>
-                                    <CheckboxList nameStorage={'Типы банковских объектов'} elements={typePoints}/>
+                                    <CheckboxList elements={typePoints}/>
                                 </ListItem>
                             </List>
                         </Collapse>

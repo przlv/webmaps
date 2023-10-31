@@ -16,3 +16,9 @@
     max-height: 300px;
     overflow-y: auto;
 }
+
+.regions-list-checkbox {
+    display: flex;
+    flex-direction: row;
+    padding-left: 3rem;
+}

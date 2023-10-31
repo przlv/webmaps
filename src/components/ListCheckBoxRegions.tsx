@@ -1,10 +1,10 @@
-import {useState, useEffect} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
+import {Collapse} from "@mui/material";
 import IconButton from '@mui/material/IconButton';
 import {Districts} from "../types/FinPoint"
 import './ListCheckBox.css'
@@ -13,6 +13,7 @@ import {addRegion, removeRegion} from "../app/regionReducer";
 import getDistricts from '../data/getDistrict';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import {addDistrict, removeDistrict, clearDistricts} from "../app/districtReducer";
 
 
 interface AdditionalListsVisible {
@@ -20,6 +21,7 @@ interface AdditionalListsVisible {
 }
 
 export function ListCheckBoxRegions() {
+    const [targetRegion, setTargetRegion] = useState<string>('');
     const [dataRegions, setDataRegions] = useState<Districts>();
     const [elements, setElements] = useState<string[]>([]);
     const [additionalListsVisible, setAdditionalListsVisible] = useState<AdditionalListsVisible>({});
@@ -31,66 +33,79 @@ export function ListCheckBoxRegions() {
             setElements(regions.sort());
         });
     }, []);
-    
-    const [selectedDistrict, setSelectedDistrict] = useState<string[]>([]);
-    const selectedRegions = useAppSelector((state) => state.selectedRegions.items)
+
+    const selectedDistricts = useAppSelector((state) => state.selectedDistricts.items)
+    const selectedRegion = useAppSelector((state) => state.selectedRegions.items)
     const dispatch = useAppDispatch()
 
-    const handleToggleDistrict = (text: string) => () => {
-        if (!selectedRegions.includes(text)) {
-            setSelectedDistrict([...selectedDistrict, text]);
+    const handleToggleDistrict = useCallback((text: string, region: string) => {
+        dispatch(removeRegion());
+        if (!selectedDistricts.includes(text)) {
+            if  (targetRegion === '') {
+                setTargetRegion(region);
+            }
+            else {
+                if (region !== targetRegion) {
+                    dispatch(clearDistricts());
+                    setTargetRegion(region);
+                }
+            }
+            dispatch(addDistrict(text));
         } else {
-            setSelectedDistrict(selectedDistrict.filter((district) => district !== text));
+            dispatch(removeDistrict(text))
         }
-    };
+    }, [dispatch, selectedDistricts]);
 
-    const handleToggleRegions = (text: string) => () => {
-        if (!selectedDistrict.includes(text)) {
-            dispatch(addRegion(text))
+    const handleToggleRegions = useCallback((text: string) => {
+        if (!(selectedRegion === text)) {
+            dispatch(addRegion(text));
+            dispatch(clearDistricts());
         } else {
-            dispatch(removeRegion(text))
+            dispatch(removeRegion());
         }
-    }
+    }, [dispatch, selectedRegion]);
 
-    const toggleAdditionalList = (value: string) => () => {
-        setAdditionalListsVisible({
-          ...additionalListsVisible,
-          [value]: !additionalListsVisible[value],
-        });
-    };
+    const toggleAdditionalList = useCallback((value: string) => {
+        setAdditionalListsVisible((prev) => ({
+            ...prev,
+            [value]: !prev[value],
+        }));
+    }, []);
     
     return (
         <List className='list-checkbox'>
-            {elements.map((value, index) => {
+            {elements.map((region, index) => {
                 const labelId = `checkbox-list-label-${index}`;
                 return (
-                    <div>
-                        <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={toggleAdditionalList(value)}>
+                    <div key={`${index}-mainList`}>
+                        <div className='regions-list-checkbox'>
                             <ListItemIcon>
                                 <Checkbox
                                     edge="start"
-                                    checked={selectedRegions.includes(value)}
+                                    checked={selectedRegion === region}
                                     tabIndex={-1}
                                     disableRipple
                                     inputProps={{ 'aria-labelledby': labelId }}
-                                    onClick={handleToggleRegions(value)}
+                                    onClick={() => handleToggleRegions(region)}
                                 />
                             </ListItemIcon>
-                            <ListItemText id={labelId} primary={value} />
-                            {additionalListsVisible[value] ? <ExpandLess /> : <ExpandMore />}
-                        </ListItem>
+                            <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={() => toggleAdditionalList(region)}>
+                                <ListItemText id={labelId} primary={region} />
+                                {additionalListsVisible[region] ? <ExpandLess /> : <ExpandMore />}
+                            </ListItem>
+                        </div>
                         <div className='districts-listcheckbox'>
-                            {additionalListsVisible[value] && (
+                            <Collapse in={additionalListsVisible[region]} timeout="auto" unmountOnExit>
                                 <List>
-                                    {dataRegions !== undefined ? dataRegions[value].map((district, index) => {
+                                    {dataRegions !== undefined ? dataRegions[region].sort().map((district, index) => {
                                         const labelId = `checkbox-list-label-district-${index}`;
                                         return (
-                                            <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={handleToggleDistrict(district)}>
+                                            <ListItem className="checkbox-list-sidebar" key={`${index}-additionallyList`} role={undefined} dense onClick={() => handleToggleDistrict(district, region)}>
                                                 <ListItemIcon>
                                                     <Checkbox
                                                         size='small'
                                                         edge="start"
-                                                        checked={selectedDistrict.includes(district)}
+                                                        checked={selectedDistricts.includes(district)}
                                                         tabIndex={-1}
                                                         disableRipple
                                                         inputProps={{ 'aria-labelledby': labelId }}
@@ -102,7 +117,7 @@ export function ListCheckBoxRegions() {
                                         )
                                     }):[]}
                                 </List>
-                            )}
+                            </Collapse>
                         </div>
                     </div>
                 );
