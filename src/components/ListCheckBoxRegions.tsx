@@ -13,7 +13,7 @@ import {addRegion, removeRegion} from "../app/regionReducer";
 import getDistricts from '../data/getDistrict';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import {addDistrict, removeDistrict, clearDistricts} from "../app/districtReducer";
+import {addDistrict, removeDistrict, clearDistricts, setupTargetRegion} from "../app/districtReducer";
 
 
 interface AdditionalListsVisible {
@@ -21,7 +21,7 @@ interface AdditionalListsVisible {
 }
 
 export function ListCheckBoxRegions() {
-    const [targetRegion, setTargetRegion] = useState<string>('');
+    // const [targetRegion, setTargetRegion] = useState<string>('');
     const [dataRegions, setDataRegions] = useState<Districts>();
     const [elements, setElements] = useState<string[]>([]);
     const [additionalListsVisible, setAdditionalListsVisible] = useState<AdditionalListsVisible>({});
@@ -35,33 +35,36 @@ export function ListCheckBoxRegions() {
     }, []);
 
     const selectedDistricts = useAppSelector((state) => state.selectedDistricts.items)
-    const selectedRegion = useAppSelector((state) => state.selectedRegions.items)
+    const targetRegion = useAppSelector((state) => state.selectedDistricts.targetRegion)
+    const selectedRegion = useAppSelector((state) => state.selectedRegion.items)
     const dispatch = useAppDispatch()
 
-    const handleToggleDistrict = useCallback((text: string, region: string) => {
+    const handleToggleDistrict = useCallback((districtCurrent: string, region: string) => {
         dispatch(removeRegion());
-        if (!selectedDistricts.includes(text)) {
+        if (!selectedDistricts.includes(districtCurrent)) {
             if  (targetRegion === '') {
-                setTargetRegion(region);
+                dispatch(setupTargetRegion(region));
             }
             else {
                 if (region !== targetRegion) {
                     dispatch(clearDistricts());
-                    setTargetRegion(region);
+                    dispatch(setupTargetRegion(region));
                 }
             }
-            dispatch(addDistrict(text));
+            dispatch(addDistrict(districtCurrent));
         } else {
-            dispatch(removeDistrict(text))
+            dispatch(removeDistrict(districtCurrent))
         }
     }, [dispatch, selectedDistricts]);
 
     const handleToggleRegions = useCallback((text: string) => {
         if (!(selectedRegion === text)) {
             dispatch(addRegion(text));
+            dispatch(setupTargetRegion(''));
             dispatch(clearDistricts());
         } else {
             dispatch(removeRegion());
+            dispatch(setupTargetRegion(''));
         }
     }, [dispatch, selectedRegion]);
 

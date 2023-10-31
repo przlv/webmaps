@@ -37,7 +37,7 @@ app.get('/api/getDistricts', (req, res) => {
         const fileData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         const fileId = file.split('_')[1].replace('.json', '');
         let region = 'Empty Region';
-        for ([key, item] of Object.entries(infoData.regions)) {
+        for (let [key, item] of Object.entries(infoData.regions)) {
           if (fileId === item) {
             region = key;
             break;
@@ -45,9 +45,12 @@ app.get('/api/getDistricts', (req, res) => {
         }
         let regular_districts = [];
         let district = 'empty district';
-        for (point of fileData.features) {
+        for (let point of fileData.features) {
           try {
-            district = point.properties.balloonContentFooter.split(',')[1].trim().toLowerCase();
+            let numDistrict = 1;
+            district = point.properties.balloonContentFooter.split(',').map((element) => element.trim().toLowerCase())
+            if (district[numDistrict] === region.trim().toLowerCase() || district[numDistrict] === 'Россия'.trim().toLowerCase()) { numDistrict = 2}
+            district = district[numDistrict].trim().toLowerCase();
           }
           catch {
             continue;

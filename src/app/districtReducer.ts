@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface DistrictsState {
     items: string[];
+    targetRegion: string;
 }
 
 const initialState: DistrictsState = {
     items: [],
+    targetRegion: ""
 };
 
 
@@ -22,8 +24,11 @@ const districtsSlice = createSlice({
         clearDistricts: (state) => {
             state.items = [];
         },
+        setupTargetRegion: (state, action: PayloadAction<string>) => {
+            state.targetRegion = action.payload;
+        }
     },
 });
 
 export default districtsSlice.reducer;
-export const { addDistrict, removeDistrict, clearDistricts } = districtsSlice.actions;
+export const { addDistrict, removeDistrict, clearDistricts, setupTargetRegion } = districtsSlice.actions;

@@ -6,7 +6,7 @@ import districtReducer from "./districtReducer";
 export const store = configureStore({
     reducer: {
         selectedTypePoints: itemsReducer,
-        selectedRegions: regionReducer,
+        selectedRegion: regionReducer,
         selectedDistricts: districtReducer,
     },
 })
