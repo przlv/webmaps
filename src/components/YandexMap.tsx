@@ -48,6 +48,10 @@ export const YandexMap: React.FC = () => {
                     const dataset = await getPoints(numData);
                     if (dataset !== null) {
                         setObjects(dataset.features);
+                        setMapState({
+                            center: dataset.features[0].geometry.coordinates,
+                            zoom: 8,
+                        });
                     }
                 } catch (error) {
                     console.error('Произошла ошибка:', error);
