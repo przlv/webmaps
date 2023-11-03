@@ -87,9 +87,9 @@ export const YandexMap: React.FC = () => {
                             openBalloonOnClick: true,
                             // preset: "islands#greenDotIcon",
                         }}
-                        // clusters={{
-                        //     preset: "islands#violetCircleDotIcon",
-                        // }}
+                        clusters={{
+                            preset: "islands#violetCircleDotIcon",
+                        }}
                         features={objects}
 
                         filter={(object: PointFeature) => {
@@ -115,6 +115,8 @@ export const YandexMap: React.FC = () => {
                         modules={[
                             "objectManager.addon.objectsBalloon",
                             "objectManager.addon.objectsHint",
+                            "objectManager.addon.clustersBalloon",
+                            "objectManager.addon.clustersHint",
                         ]}
                     />
                     <Placemark
