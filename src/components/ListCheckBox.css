@@ -12,7 +12,7 @@
 
 /* districts */
 .districts-listcheckbox {
-    padding-left: 5%;
+    padding-left: 15%;
     max-height: 300px;
     overflow-y: auto;
 }

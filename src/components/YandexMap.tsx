@@ -5,9 +5,8 @@ import './Map.css';
 
 import {Coords, CurrentCoords, PointFeature} from '../types/FinPoint'
 import { useAppSelector } from '../app/hooks'
-import getPoints from "../data/getPoints";
 import infoData from "../data/infoData.json"
-
+import getPointsData from '../data/getPointsData'
 
 interface BankLocation {
     [region: string]: string;
@@ -44,10 +43,14 @@ export const YandexMap: React.FC = () => {
                     if (selectedRegion !== '') region = selectedRegion;
                     else region = targetRegion;
 
-                    const numData = Number(infoDatasets.regions[region]);
-                    const dataset = await getPoints(numData);
+                    const numData = infoDatasets.regions[region];
+                    const dataset = await getPointsData(numData);
                     if (dataset !== null) {
                         setObjects(dataset.features);
+                        setMapState({
+                            center: dataset.features[0].geometry.coordinates,
+                            zoom: 8,
+                        });
                     }
                 } catch (error) {
                     console.error('Произошла ошибка:', error);
@@ -87,9 +90,9 @@ export const YandexMap: React.FC = () => {
                             openBalloonOnClick: true,
                             // preset: "islands#greenDotIcon",
                         }}
-                        // clusters={{
-                        //     preset: "islands#violetCircleDotIcon",
-                        // }}
+                        clusters={{
+                            preset: "islands#violetCircleDotIcon",
+                        }}
                         features={objects}
 
                         filter={(object: PointFeature) => {
@@ -115,6 +118,8 @@ export const YandexMap: React.FC = () => {
                         modules={[
                             "objectManager.addon.objectsBalloon",
                             "objectManager.addon.objectsHint",
+                            "objectManager.addon.clustersBalloon",
+                            "objectManager.addon.clustersHint",
                         ]}
                     />
                     <Placemark
