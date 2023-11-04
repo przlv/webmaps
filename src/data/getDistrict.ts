@@ -2,11 +2,12 @@ import { Districts } from "../types/FinPoint";
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3001',
+    baseURL: 'http://127.0.0.1:3001/api',
 });
 
+
 export default async function getDistrics(): Promise<Districts> {
-    return axiosInstance.get(`/api/getDistricts`)
+    return axiosInstance.get(`/getDistricts`)
         .then(response => {
             return response.data;
         })
