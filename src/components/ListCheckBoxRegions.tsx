@@ -10,7 +10,7 @@ import {Districts} from "../types/FinPoint"
 import './ListCheckBox.css'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
 import {addRegion, removeRegion} from "../app/regionReducer";
-import getDistricts from '../data/getDistrict';
+import getDistrictsData from '../data/getDisctrictsData';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import {addDistrict, removeDistrict, clearDistricts, setupTargetRegion} from "../app/districtReducer";
@@ -21,13 +21,12 @@ interface AdditionalListsVisible {
 }
 
 export function ListCheckBoxRegions() {
-    // const [targetRegion, setTargetRegion] = useState<string>('');
     const [dataRegions, setDataRegions] = useState<Districts>();
     const [elements, setElements] = useState<string[]>([]);
     const [additionalListsVisible, setAdditionalListsVisible] = useState<AdditionalListsVisible>({});
 
     useEffect(() => {
-        getDistricts().then((districtsData) => {
+        getDistrictsData().then((districtsData) => {
             setDataRegions(districtsData);
             let regions = Object.keys(districtsData);
             setElements(regions.sort());

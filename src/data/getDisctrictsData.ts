@@ -12,14 +12,13 @@ interface FileData {
 }
 
 export default async function getDistrictsData(): Promise<{ [key: string]: string[] }> {
-    const ids = [23, 64 /* ...другие числа */];
+    const infoRegions: { [key: string]: string } = infoData.regions;
     const districtData: { [key: string]: string[] } = {};
 
-    for (const id of ids) {
+    for (const id of Object.values(infoRegions)) {
         try {
-            // Динамически импортируйте каждый файл на основе списка ID
-            const fileData: FileData = await import(`./data/dataRegions/file_${id}.json`);
-            const region = Object.keys(infoData.regions).find(key => infoData.regions[key] === id.toString()) || 'Empty Region';
+            const fileData: FileData = await import(`./dataRegions/full_${id}.json`);
+            const region = Object.keys(infoRegions).find(key => infoRegions[key] === id) || 'Empty Region';
 
             const regular_districts: string[] = [];
             for (const point of fileData.features) {
@@ -37,7 +36,7 @@ export default async function getDistrictsData(): Promise<{ [key: string]: strin
                         regular_districts.push(district);
                     }
                 } catch {
-                    continue;
+                    console.log('error');
                 }
             }
             districtData[region] = regular_districts;
