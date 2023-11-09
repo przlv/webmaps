@@ -9,7 +9,7 @@ import {loadFilterDistrict} from "../app/filterDistrictsReducer";
 import infoData from "../data/infoData.json"
 import getPointsData from '../data/getPointsData'
 import getDistrictsData from '../data/getDisctrictsData';
-
+import apikeyData from "../../apikey.json"
 interface BankLocation {
     [region: string]: string;
 }
@@ -19,6 +19,7 @@ interface BankInterface {
     typePoints: string[];
 }
 
+const apikey: string = apikeyData.api;
 
 export const YandexMap: React.FC = () => {
     const [mapState, setMapState] = useState<CurrentCoords>({
@@ -88,7 +89,7 @@ export const YandexMap: React.FC = () => {
     }, []);
 
     return (
-        <YMaps query={{apikey:'23433d4b-ba8e-4b36-8d78-40afc5eb0acf'}}>
+        <YMaps query={{apikey:apikey}}>
             <div className="wrapper-ym">
                 <Map state={mapState} width="100%" height="100vh">
                     <ZoomControl />
