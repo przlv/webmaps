@@ -4,10 +4,12 @@ import { YMaps, Map, Placemark, ZoomControl, TypeSelector, RouteButton, ObjectMa
 import './Map.css';
 
 import {Coords, CurrentCoords, PointFeature} from '../types/FinPoint'
-import { useAppSelector } from '../app/hooks'
+import { useAppSelector, useAppDispatch} from '../app/hooks'
+import {loadFilterDistrict} from "../app/filterDistrictsReducer";
 import infoData from "../data/infoData.json"
 import getPointsData from '../data/getPointsData'
-
+import getDistrictsData from '../data/getDisctrictsData';
+import apikeyData from "../apikey.json"
 interface BankLocation {
     [region: string]: string;
 }
@@ -17,6 +19,7 @@ interface BankInterface {
     typePoints: string[];
 }
 
+const apikey: string = apikeyData.api;
 
 export const YandexMap: React.FC = () => {
     const [mapState, setMapState] = useState<CurrentCoords>({
@@ -31,6 +34,7 @@ export const YandexMap: React.FC = () => {
     const selectedDistricts = useAppSelector((state) => state.selectedDistricts.items);
     const targetRegion = useAppSelector((state) => state.selectedDistricts.targetRegion);
     const selectedGridSize = useAppSelector((state) => state.selectedGridSize.gridSize);
+    const dispatch = useAppDispatch()
 
     const infoDatasets: BankInterface = infoData as BankInterface;
     useEffect(() => {
@@ -58,7 +62,7 @@ export const YandexMap: React.FC = () => {
             }
             else setObjects([]);
         }
-        fetchData();
+        fetchData().then();
     }, [selectedRegion, targetRegion]);
 
     useEffect(() => {
@@ -73,8 +77,19 @@ export const YandexMap: React.FC = () => {
         }
     }, []);
 
+    useEffect(() => {
+        getDistrictsData().then((districtsData) => {
+            let regions = Object.keys(districtsData);
+            const dataLoad = {
+                districts: districtsData,
+                regions: regions.sort()
+            }
+            dispatch(loadFilterDistrict(dataLoad))
+        });
+    }, []);
+
     return (
-        <YMaps query={{apikey:'23433d4b-ba8e-4b36-8d78-40afc5eb0acf'}}>
+        <YMaps query={{apikey:apikey}}>
             <div className="wrapper-ym">
                 <Map state={mapState} width="100%" height="100vh">
                     <ZoomControl />

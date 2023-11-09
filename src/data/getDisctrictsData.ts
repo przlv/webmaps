@@ -39,7 +39,7 @@ export default async function getDistrictsData(): Promise<{ [key: string]: strin
                     console.log('error');
                 }
             }
-            districtData[region] = regular_districts;
+            districtData[region] = regular_districts.sort();
         } catch (error) {
             console.error(`Error loading data for ID ${id}:`, error);
         }

@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 .idea
+apikey.json
 
 full_*.json
 
