@@ -3,6 +3,7 @@ import itemsReducer from './typePointsReducer'
 import regionReducer from "./regionReducer";
 import districtReducer from "./districtReducer";
 import sliderReducer from "./sliderReducer";
+import filterDistrictsReducer from "./filterDistrictsReducer";
 
 export const store = configureStore({
     reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
         selectedRegion: regionReducer,
         selectedDistricts: districtReducer,
         selectedGridSize: sliderReducer,
+        loadDistricts: filterDistrictsReducer
     },
 })
 

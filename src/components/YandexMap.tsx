@@ -4,9 +4,11 @@ import { YMaps, Map, Placemark, ZoomControl, TypeSelector, RouteButton, ObjectMa
 import './Map.css';
 
 import {Coords, CurrentCoords, PointFeature} from '../types/FinPoint'
-import { useAppSelector } from '../app/hooks'
+import { useAppSelector, useAppDispatch} from '../app/hooks'
+import {loadFilterDistrict} from "../app/filterDistrictsReducer";
 import infoData from "../data/infoData.json"
 import getPointsData from '../data/getPointsData'
+import getDistrictsData from '../data/getDisctrictsData';
 
 interface BankLocation {
     [region: string]: string;
@@ -31,6 +33,7 @@ export const YandexMap: React.FC = () => {
     const selectedDistricts = useAppSelector((state) => state.selectedDistricts.items);
     const targetRegion = useAppSelector((state) => state.selectedDistricts.targetRegion);
     const selectedGridSize = useAppSelector((state) => state.selectedGridSize.gridSize);
+    const dispatch = useAppDispatch()
 
     const infoDatasets: BankInterface = infoData as BankInterface;
     useEffect(() => {
@@ -58,7 +61,7 @@ export const YandexMap: React.FC = () => {
             }
             else setObjects([]);
         }
-        fetchData();
+        fetchData().then();
     }, [selectedRegion, targetRegion]);
 
     useEffect(() => {
@@ -71,6 +74,17 @@ export const YandexMap: React.FC = () => {
                 });
             });
         }
+    }, []);
+
+    useEffect(() => {
+        getDistrictsData().then((districtsData) => {
+            let regions = Object.keys(districtsData);
+            const dataLoad = {
+                districts: districtsData,
+                regions: regions.sort()
+            }
+            dispatch(loadFilterDistrict(dataLoad))
+        });
     }, []);
 
     return (
