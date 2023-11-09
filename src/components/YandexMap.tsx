@@ -9,7 +9,7 @@ import {loadFilterDistrict} from "../app/filterDistrictsReducer";
 import infoData from "../data/infoData.json"
 import getPointsData from '../data/getPointsData'
 import getDistrictsData from '../data/getDisctrictsData';
-import apikeyData from "../../apikey.json"
+import apikeyData from "../apikey.json"
 interface BankLocation {
     [region: string]: string;
 }
