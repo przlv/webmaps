@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { YMaps, Map, Placemark, ZoomControl, TypeSelector, RouteButton, ObjectManager } from '@pbe/react-yandex-maps';
+import { YMaps, Map, Placemark, ZoomControl, TypeSelector, RouteButton, ObjectManager, GeolocationControl, TrafficControl, RulerControl } from '@pbe/react-yandex-maps';
 
 import './Map.css';
 
@@ -95,6 +95,9 @@ export const YandexMap: React.FC = () => {
                     <ZoomControl />
                     <TypeSelector />
                     <RouteButton options={{ float: "right" }} />
+                    <GeolocationControl options={{ float: "right" }} />
+                    <TrafficControl />
+                    <RulerControl />
                     <ObjectManager
                         key={selectedRegion}
                         options={{
