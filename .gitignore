@@ -8,6 +8,7 @@
 apikey.json
 
 full_*.json
+/old_scripts_and_components
 
 # testing
 /coverage

@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -5,34 +6,34 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
-import {CheckboxListProps} from "../types/FinPoint"
 import './ListCheckBox.css'
 import { useAppSelector, useAppDispatch } from '../app/hooks'
-import {addPoint, removePoint} from "../app/typePointsReducer";
+import {addRegion, removeRegion} from "../app/regionReducer";
 
 
-export function CheckboxList ({elements}: CheckboxListProps) {
-    const selectedTypePoints = useAppSelector((state) => state.selectedTypePoints.items)
+export function ListCheckBoxRegions() {
+    const selectedRegion = useAppSelector((state) => state.selectedRegion.items)
+    const filterDistricts = useAppSelector((state) => state.loadDistricts)
     const dispatch = useAppDispatch()
 
-    const handleToggleTypePoints = (text: string) => () => {
-        if (!selectedTypePoints.includes(text)) {
-            dispatch(addPoint(text))
+    const handleToggleRegions = useCallback((text: string) => {
+        if (!(selectedRegion === text)) {
+            dispatch(addRegion(text));
         } else {
-            dispatch(removePoint(text))
+            dispatch(removeRegion());
         }
-    };
+    }, [dispatch, selectedRegion]);
 
     return (
         <List className='list-checkbox'>
-            {elements.map((value, index) => {
+            {filterDistricts.regions.map((value, index) => {
                 const labelId = `checkbox-list-label-${index}`;
                 return (
-                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={handleToggleTypePoints(value)}>
+                    <ListItem className="checkbox-list-sidebar" key={index} role={undefined} dense onClick={() => handleToggleRegions(value)}>
                         <ListItemIcon>
                             <Checkbox
                                 edge="start"
-                                checked={selectedTypePoints.includes(value)}
+                                checked={selectedRegion === value}
                                 tabIndex={-1}
                                 disableRipple
                                 inputProps={{ 'aria-labelledby': labelId }}
