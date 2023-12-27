@@ -12,7 +12,7 @@ import {Collapse} from "@mui/material";
 import Divider from "@mui/material/Divider";
 import React, {useState} from "react";
 import {CheckboxList} from "./ListCheckBox";
-import {ListCheckBoxRegions} from "./ListCheckBoxRegions";
+import {ListCheckBoxRegions} from "./ListCheckBoxRegs";
 import CustomSlider from "./Slider";
 import infoData from "../data/infoData.json"
 import './SideBarMenu.css'
