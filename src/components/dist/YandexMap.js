@@ -53,7 +53,7 @@ var getDefaultRegion = function (coords, dispatch) { return __awaiter(void 0, vo
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                apiKey = '25ad1f2b-6fe5-4217-88d3-f95b872816b2';
+                apiKey = apikey;
                 latitude = coords[0];
                 longitude = coords[1];
                 regions = Object.keys(infoData_json_1["default"].regions);

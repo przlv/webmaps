@@ -32,7 +32,7 @@ interface Adress {
 const apikey: string = apikeyData.api;
 
 const getDefaultRegion = async (coords: Array<Number>, dispatch: AppDispatch) => {
-    const apiKey = '25ad1f2b-6fe5-4217-88d3-f95b872816b2';
+    const apiKey = apikey;
     const latitude = coords[0];
     const longitude = coords[1];
     const regions = Object.keys(infoData.regions);
